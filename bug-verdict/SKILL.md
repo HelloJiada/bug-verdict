@@ -19,6 +19,16 @@ Bug Verdict is for problems where behavior is wrong but the cause is not yet kno
 
 **Boundary rule:** “Make this card use a 4dp corner radius” is not a Bug Verdict case. “The design shows a 4dp corner radius, but the running UI still renders square corners” is a Bug Verdict case, because layout, rendering, image processing, or state behavior may be involved.
 
+### Early Direct-Implementation Routing
+
+Route to a normal implementation flow in the first response when the request identifies the target outcome, the target control/resource or the single property to change, and no runtime, state, constraint, rendering, or asynchronous-causality question remains.
+
+| Request shape | Correct route |
+| --- | --- |
+| Replace this unselected icon with this asset in one named surface | Confirm scope, then implement directly |
+| Change this selected border from 1dp to 1.6dp | Confirm the target path, then implement directly |
+| The design specifies 4dp corners but the rendered UI is still square | Open a Bug Verdict case because the cause is unknown |
+
 ## 2. Governing Principles
 
 1. **Runtime facts outrank intuition.** What actually happened outranks what the code seems likely to do.
@@ -29,6 +39,18 @@ Bug Verdict is for problems where behavior is wrong but the cause is not yet kno
 6. **Insufficient evidence must be stated plainly.** Do not fill gaps with confidence language.
 
 ## 3. Two-Axis Case Classification
+
+### Same-Case Supplements vs. New Cases
+
+Treat a later clarification as a **same-case supplement** when it adds a title, copy, acceptance criterion, display rule, or a narrower implementation requirement to an already investigated issue. Reuse the existing evidence, verdict, and authorization state. Update the scope and regression boundary; do not reopen intake, repeat evidence collection, or ask the same first diagnostic question.
+
+Open a new case only when at least one observable condition is true:
+- the new symptom occurs through a different entry point, host, or business object
+- the existing verdict cannot explain the new symptom
+- the new symptom requires different runtime evidence, a different execution path, or a different fix boundary
+- the original case was closed and the new report proves an independent regression outside the verified path
+
+Example: after resolving “a loading page exposes an address-like title,” a request to fix the title to a chosen label is a same-case supplement. It should reuse the original title-update boundary rather than reopen the investigation.
 
 Every case must be classified on two axes: **impact priority** and **case size**.
 
