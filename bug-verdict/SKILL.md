@@ -127,6 +127,74 @@ Evidence is admissible only if it is:
 
 Before adding any new instrumentation, ask whether runtime evidence already exists.
 
+### 5.5 First-Round Instance-Level Logging for External Entry / Activity Lifecycle Cases
+
+When a case involves **external entry points** such as Chrome, H5, ads, notifications, deep links, or intent filters, and the symptom looks like repeated navigation, duplicated page opens, needing multiple back presses to exit, unexpected `onNewIntent`, task-stack confusion, or Activity recreation, the **first** logging round must use an instance-level template. Do not spend a round on generic `action/data` logging and only later realize you still cannot tell whether instances were duplicated.
+
+The first round must capture at least:
+
+1. **Host Activity** instance identity at `onCreate`, `onNewIntent`, and the first business dispatch point (`processLogic`, `handleIntent`, `dispatch`, or equivalent).
+2. **Target Activity** instance identity at `onCreate`, `onNewIntent`, `onBackPressed`, and `onDestroy`.
+3. **Correlation keys** such as business entity IDs, source, and task ID.
+4. **Dispatch sequence or dedupe result** so it is directly visible how many times the same logical entry was consumed.
+
+Recommended shape:
+
+```text
+host_create instance=<id> ...
+host_new_intent instance=<id> ...
+host_dispatch instance=<id> ...
+target_create instance=<id> entity=<id> ...
+target_new_intent instance=<id> ...
+target_back_pressed instance=<id> ...
+target_destroy instance=<id> finishing=<bool> changingConfig=<bool>
+```
+
+The first-round objective is not merely to show that navigation happened twice. It is to answer, in one pass:
+- did one host instance dispatch twice, or was a second host instance created?
+- was the target Activity reused, or was a second target instance created?
+- how many times was the same logical entity actually consumed?
+
+If the first-round logs cannot answer those questions, the instrumentation boundary was wrong. Fix the logging boundary before moving to the next hypothesis.
+
+### 5.6 Partial Verdicts Are Not Whole-Case Verdicts
+
+If one reported problem actually contains multiple abnormal sub-paths, keep separate verdict states per sub-problem:
+
+```text
+[Sub-problem A] pending validation / verdict reached / insufficient evidence
+[Sub-problem B] pending validation / verdict reached / insufficient evidence
+[Whole-case status] only moves into fix execution once every load-bearing sub-problem has been adjudicated
+```
+
+A locally established cause does **not** automatically authorize whole-case implementation. If a fix for one sub-problem could mask, short-circuit, or otherwise contaminate evidence for another unresolved sub-problem, continue investigation first.
+
+### 5.7 No Complex Execution Flow Before Root Cause Convergence
+
+While the case still has unresolved main-path sub-problems, default to the simplest investigation setup:
+- stay in the main workspace
+- keep instrumentation minimal and case-specific
+- keep the work focused on evidence, path tracing, and original-path validation
+
+Do **not** escalate into worktrees, subagent orchestration, or multi-stage implementation workflow until the root cause for the relevant sub-problem or whole case has actually been adjudicated and implementation has been authorized.
+
+This rule exists to prevent tooling and process overhead from overtaking the bug investigation itself.
+
+### 5.8 Every Round Must State the Current Main Hypothesis Explicitly
+
+After each new evidence round, produce an explicit update in this shape:
+
+```text
+[New evidence]
+[Execution path traced so far]
+[Main hypothesis]
+[Falsification condition]
+[Current verdict state]
+[Next minimal validation]
+```
+
+If the main hypothesis changes, the change must be visible in the case record. Do not allow the investigation to drift silently across multiple explanations.
+
 | Current situation | Required action | Forbidden shortcut |
 | --- | --- | --- |
 | Logs/traces already exist | Analyze them first and identify the exact missing boundary before adding anything new | Ignoring existing evidence and adding new logs immediately |
