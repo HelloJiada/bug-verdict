@@ -16,3 +16,4 @@
 - formalized partial-vs-whole-case verdict handling
 - added a guardrail that root-cause convergence comes before worktrees, subagent orchestration, or complex implementation flow
 - required every investigation round to state the current main hypothesis, falsification condition, and next minimal validation
+- added a questioning threshold so investigations ask only for missing critical evidence, missing authorization, or undefined business expectation, and forbid fragmented repeated micro-questions
