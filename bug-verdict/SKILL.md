@@ -195,6 +195,22 @@ After each new evidence round, produce an explicit update in this shape:
 
 If the main hypothesis changes, the change must be visible in the case record. Do not allow the investigation to drift silently across multiple explanations.
 
+### 5.9 Questioning Threshold and No Fragmented Repeated Questioning
+
+The court does not keep asking the user questions continuously. A question is required only when the investigation cannot legitimately enter the next stage without it.
+
+There are only three mandatory question categories:
+
+1. **Missing critical evidence for the next stage** — for example missing runtime logs, recordings, instance-level boundaries, API responses, reproduction steps, or timing windows.
+2. **Missing new authorization** — for example moving from investigation-only into code changes, or expanding the fix scope beyond the existing authorization.
+3. **Undefined business expectation** — for example the expected outcome itself is not yet decided, such as whether a return path should land on Home, Chrome, or an in-app previous page.
+
+If the **current main hypothesis is already clear** and the **next minimal validation is already clear**, and that validation can be executed through code reading, existing evidence, or the smallest additional instrumentation, then the investigation must continue without asking again.
+
+If several evidence gaps can be requested together in one round, they must be asked as **one batched request**. Do not fragment one investigation round into repeated micro-questions. A new question round is justified only when new evidence invalidates the previous question set or reveals a new critical gap.
+
+If enough evidence already exists and the investigation still keeps asking, that is a process failure, not a requirement of the Bug Verdict workflow.
+
 | Current situation | Required action | Forbidden shortcut |
 | --- | --- | --- |
 | Logs/traces already exist | Analyze them first and identify the exact missing boundary before adding anything new | Ignoring existing evidence and adding new logs immediately |
