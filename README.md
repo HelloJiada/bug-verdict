@@ -2,6 +2,8 @@
 
 [中文说明 / Chinese README](README.zh-CN.md)
 
+[Changelog](CHANGELOG.md)
+
 An evidence-first bug investigation workflow skill for cases where the cause is unclear and guessing would create rework.
 
 ## When to Use
@@ -33,16 +35,6 @@ Typical non-cases include:
 - No closeout without path-based verification.
 - Suspicious code is a clue, not a verdict.
 - If evidence is insufficient, say so explicitly.
-
-## Recent Update
-
-### 2026-07-29
-
-- Strengthened the external-entry / Activity-lifecycle investigation rules.
-- First-round logging now explicitly requires instance-level host/target Activity tracing for deep links, notifications, ads, Chrome/H5 entry, and task-stack anomalies.
-- Added formal rules for partial-vs-whole-case verdicts, so one solved sub-problem does not incorrectly authorize whole-case implementation.
-- Added a guardrail that root-cause convergence comes before worktrees, subagent orchestration, or complex implementation flow.
-- Each investigation round now requires an explicit main hypothesis, falsification condition, and next minimal validation.
 
 ## Install
 
